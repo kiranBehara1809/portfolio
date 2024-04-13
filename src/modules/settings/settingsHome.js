@@ -64,7 +64,6 @@ const SettingsHome = () => {
       </Backdrop>
       <Grid
         container
-        spacing={1}
         direction={"row"}
         sx={{ width: "calc(100vw - 53px) !important" }}
       >
@@ -132,7 +131,7 @@ const SettingsHome = () => {
           </Grid>
         </Grid>
 
-        <Grid item xs={12} sm={7.5}>
+        <Grid item xs={12} sm={7.5} sx={{pl:1}}>
           {selectedMenuCard === "THEME" && <ThemeSwitcher />}
           {selectedMenuCard === "FONT_SIZE" && <UnderDev />}
         </Grid>

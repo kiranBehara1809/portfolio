@@ -90,12 +90,14 @@ const Header = () => {
         sx={{
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
           flexDirection: "row",
           width: "100%",
         }}
       >
         <Typography variant="h5" noWrap component="div" sx={{ pl: 2 }}>
-          {pageHeader || PROJECT_INFO.name}
+          {/* {pageHeader || PROJECT_INFO.name} */}
+          {PROJECT_INFO.name}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           {randomAvatar === null ? (
@@ -107,9 +109,9 @@ const Header = () => {
           ) : (
             <img
               src={randomAvatar}
-              width={30}
+              width={35}
               onClick={(event) => handleClick(event)}
-              height={30}
+              height={35}
               style={{ borderRadius: "50%", cursor: "pointer" }}
             />
           )}
@@ -120,7 +122,7 @@ const Header = () => {
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
-                maxWidth: "180px",
+                maxWidth: "220px",
                 paddingLeft: "10px",
                 cursor: "pointer",
               }}
@@ -144,7 +146,7 @@ const Header = () => {
           horizontal: "right",
         }}
       >
-        <List sx={{ width: "200px" }}>
+        <List sx={{ width: "250px" }}>
           <ListItem
             disablePadding
             sx={{ display: "flex", justifyContent: "center", p: 1 }}
