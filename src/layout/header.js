@@ -23,23 +23,27 @@ import {
 import { http_get } from "../http/betaInsightsRequests";
 import ProfileDialog from "../modules/loggedInUser/profile";
 import { useSelector } from "react-redux";
+import { auth } from "../firebase";
 
 const Header = () => {
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [currentUserData, setCurrentUserData] = useState(null);
   const navigate = useNavigate();
-  const curUserEmail = localStorage.getItem("CUR_USER_EMAIL") || "";
   const customIconStyles = {
     margin: "0px 5px",
     cursor: "pointer",
   };
-  const pageHeader = useSelector((state) => state.pageHeader.name);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [randomAvatar, setRandomAvatar] = useState(faker.image.avatar());
 
   useEffect(() => {
-    // getCurrentLoggedUser();
+    const tempUserData = localStorage.getItem("TEMP_USER_DATA");
+    if (tempUserData) {
+      setCurrentUserData(JSON.parse(tempUserData));
+      console.log(JSON.parse(tempUserData));
+    } else {
+      navigate("/login");
+    }
   }, []);
 
   const handleClick = (event) => {
@@ -64,6 +68,8 @@ const Header = () => {
           if (res.isConfirmed) {
             showBasicToast("success", "Logout successful");
             navigate(option.url);
+            localStorage.removeItem("TEMP_USER_DATA");
+            auth.signOut();
           }
         }
       );
@@ -73,19 +79,8 @@ const Header = () => {
     }
   };
 
-  const getCurrentLoggedUser = async () => {
-    // const currentUser = await getCurrentUser();
-    // setCurrentUserData(currentUser || null);
-    // store.dispatch(CURRENT_USER_ACTIONS.setCurrentUser(currentUser || null));
-  };
-
   return (
     <>
-      <ProfileDialog
-        currentUserData={currentUserData}
-        profileDialogOpen={profileDialogOpen}
-        setProfileDialogOpen={handleProfileDialogClose}
-      />
       <Box
         sx={{
           display: "flex",
@@ -99,38 +94,18 @@ const Header = () => {
           {/* {pageHeader || PROJECT_INFO.name} */}
           {PROJECT_INFO.name}
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          {randomAvatar === null ? (
-            <AccountCircleIcon
-              fontSize="large"
-              sx={customIconStyles}
-              onClick={(event) => handleClick(event)}
-            />
-          ) : (
+        {currentUserData && (
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <img
-              src={randomAvatar}
+              src={currentUserData?.photoURL}
+              loading="eager"
               width={35}
               onClick={(event) => handleClick(event)}
               height={35}
               style={{ borderRadius: "50%", cursor: "pointer" }}
             />
-          )}
-          <Tooltip title={curUserEmail}>
-            <span
-              onClick={(event) => handleClick(event)}
-              style={{
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                maxWidth: "220px",
-                paddingLeft: "10px",
-                cursor: "pointer",
-              }}
-            >
-              {curUserEmail}
-            </span>
-          </Tooltip>
-        </Box>
+          </Box>
+        )}
       </Box>
 
       <Popover
@@ -146,13 +121,27 @@ const Header = () => {
           horizontal: "right",
         }}
       >
+        <Box
+          sx={{
+            background: "#8e7070",
+            color: "white",
+            display: "flex",
+            p: "4px 0",
+            justifyContent: "center",
+          }}
+        >
+          Signed in{" "}
+          {currentUserData?.provider !== "Anonymously"
+            ? "with " +currentUserData?.provider
+            : currentUserData?.provider}
+        </Box>
         <List sx={{ width: "250px" }}>
           <ListItem
             disablePadding
             sx={{ display: "flex", justifyContent: "center", p: 1 }}
           >
             <img
-              src={randomAvatar}
+              src={currentUserData?.photoURL}
               width={120}
               height={120}
               style={{ borderRadius: "50%" }}
@@ -166,7 +155,7 @@ const Header = () => {
               fontWeight: "bold",
             }}
           >
-            <Tooltip title={curUserEmail}>
+            <Tooltip title={currentUserData?.displayName}>
               <span
                 style={{
                   whiteSpace: "nowrap",
@@ -174,7 +163,7 @@ const Header = () => {
                   textOverflow: "ellipsis",
                 }}
               >
-                {curUserEmail}
+                {currentUserData?.displayName}
               </span>
             </Tooltip>
           </ListItem>

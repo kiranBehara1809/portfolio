@@ -1,68 +1,100 @@
 import React, { useEffect, useState } from "react";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import LockOpenIcon from "@mui/icons-material/LockOpen";
-import { Backdrop, CircularProgress, useTheme } from "@mui/material";
+import { faker } from "@faker-js/faker";
+import {
+  Backdrop,
+  CircularProgress,
+  Divider,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { useNavigate } from "react-router";
 import { addBaseUrl, showBasicToast } from "../../common/functions/function";
-import { handleLogin } from "../../http/authRequests";
-import { API_FAILURE_MSG } from "../../constants/errorText";
 import { Controller, useForm } from "react-hook-form";
-import * as REGEX from "../../constants/regex";
-import { UI } from "../../constants/project";
-import projectLogo from "../../assets/project-logo.png";
-import  store from '../../store'
+import store from "../../store";
 import { PAGE_HEADER_ACTIONS } from "../../store/slices/pageHeader";
-
-const helperTexts = {
-  userEmail: {
-    required: "User Email is Required",
-    pattern: "Invalid data entered, please check",
-  },
-  password: {
-    required: "Password is Required",
-    maxLength: "Max Length Exceeded",
-  },
-};
+import {
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInAnonymously,
+} from "firebase/auth";
+import { auth } from "../../firebase";
+import { PROJECT_INFO } from "../../constants/project";
 
 export default function Login() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { control, setValue, getValues, trigger, formState, watch } = useForm({
-    mode: "all",
-    reValidateMode: "onBlur",
-  });
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    if (data.get("userEmail") === "") {
-      showBasicToast("info", "User Email is required");
-      return;
-    }
-    if (data.get("password") === "") {
-      showBasicToast("info", "Password is required");
-      return;
-    }
-    localStorage.setItem("CUR_USER_EMAIL", data.get("userEmail"));
+  const handleSubmit = () => {
     navigate(addBaseUrl("home"));
-    store.dispatch(PAGE_HEADER_ACTIONS.setPageHeader("Dashboard"))
-    // handleLogin(data.get("userEmail"), data.get("password")).then((res) => {
-    //   if (res) {
-    //     showBasicToast("success", res.msg);
-    //     navigate(addBaseUrl("home"));
-    //   }
-    // });
+    store.dispatch(PAGE_HEADER_ACTIONS.setPageHeader("Dashboard"));
+  };
+
+  const handleLoginWithGithub = async () => {
+    const provider = new GithubAuthProvider();
+    try {
+      const res = await signInWithPopup(auth, provider);
+      if (!res) {
+        throw new Error("Could not complete signup");
+      }
+      const user = res.user;
+      if (user) {
+        const localObj = {
+          email: user.providerData[0]?.email || "",
+          phoneNumber: user.providerData[0]?.phoneNumber || "",
+          displayName: user.providerData[0]?.displayName || "",
+          photoURL: user.providerData[0]?.photoURL || "",
+          provider: "GitHub",
+        };
+        localStorage.setItem("TEMP_USER_DATA", JSON.stringify(localObj));
+        handleSubmit();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSignInAnonymously = async () => {
+    try {
+      const res = await signInAnonymously(auth);
+      if (!res) {
+        throw new Error("Could not complete signup");
+      }
+      console.log(res);
+      const user = res.user;
+      if (user) {
+        const localObj = {
+          email: faker.internet.email() || "",
+          phoneNumber: faker.internet.port() || "",
+          displayName: faker.internet.userName() || "",
+          photoURL: faker.image.avatar() || "",
+          provider: "Anonymously",
+        };
+        localStorage.setItem("TEMP_USER_DATA", JSON.stringify(localObj));
+        handleSubmit();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const signInWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+    const info = signInWithPopup(auth, provider).then((res) => {
+      if (res) {
+        const localObj = {
+          email: res.user.providerData[0]?.email || "",
+          phoneNumber: res.user.providerData[0]?.phoneNumber || "",
+          displayName: res.user.providerData[0]?.displayName || "",
+          photoURL: res.user.providerData[0]?.photoURL || "",
+          provider: "Google",
+        };
+        localStorage.setItem("TEMP_USER_DATA", JSON.stringify(localObj));
+        handleSubmit();
+      }
+    });
   };
 
   return (
@@ -70,7 +102,7 @@ export default function Login() {
       <Box
         sx={{
           display: "flex",
-          flexDirection: "row",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           width: "100%",
@@ -79,141 +111,56 @@ export default function Login() {
           p: 1,
         }}
       >
+        <Typography variant="h6" sx={{ pb: 1 }}>
+          Welcome to Kiran Behara's Portfolio
+        </Typography>
+
         <Box
           sx={{
-            p: 3,
-            borderTopLeftRadius: 5,
-            borderBottomLeftRadius: 5,
-            background: "background.default",
-            boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
-          }}
-        >
-          <img
-            src={projectLogo}
-            loading="eager"
-            width={"200px"}
-            height={196}
-            style={{ borderRadius: "10px" }}
-          />
-        </Box>
-        <Box
-          sx={{
-            p: 3,
+            p: 1.5,
             borderTopRightRadius: 5,
             borderBottomRightRadius: 5,
             background: "background.default",
-            width: "350px",
-            minHeight: "250px",
-            maxHeight: "250px",
+            width: "280px",
+            borderRadius: "10px",
+            minHeight: "auto",
+            maxHeight: "auto",
             boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
+            boxShadow:
+              "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              width: "100%",
-              mt: "-8px",
-              mb: 1,
-            }}
+          <img
+            src={PROJECT_INFO.logo}
+            width={"100%"}
+            height={250}
+            style={{ borderRadius: "10px" }}
+          />
+          <Divider sx={{ pt: 2, mb: 2 }} />
+          <Button
+            variant="contained"
+            onClick={() => handleLoginWithGithub()}
+            fullWidth
+            sx={{ mb: 1, textTransform: "capitalize" }}
           >
-            <Typography component="h1" variant="h5">
-              Login
-            </Typography>
-          </Box>
-
-          <Box component="form" onSubmit={handleSubmit}>
-            <Controller
-              control={control}
-              name="userEmail"
-              defaultValue=""
-              rules={{
-                required: true,
-                pattern: REGEX.TEXT_REGEX.EMAIL,
-              }}
-              render={({ field, fieldState: { error } }) => (
-                <TextField
-                  {...field}
-                  type="text"
-                  variant={UI.fieldVariant}
-                  fullWidth
-                  autoComplete="off"
-                  label="User Email"
-                  required
-                  autoFocus
-                  placeholder={"abc@abc.com"}
-                  error={error !== undefined}
-                  helperText={error ? helperTexts.userEmail[error.type] : ""}
-                />
-              )}
-            />
-            {/* <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="userEmail"
-              label="User Email"
-              name="userEmail"
-              autoComplete="off"
-              autoFocus
-            /> */}
-            {/* <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="off"
-            /> */}
-            <div style={{ marginTop: "16px" }}>
-              <Controller
-                control={control}
-                name="password"
-                defaultValue=""
-                rules={{
-                  required: true,
-                  maxLength: 30,
-                }}
-                render={({ field, fieldState: { error } }) => (
-                  <TextField
-                    {...field}
-                    type="password"
-                    variant={UI.fieldVariant}
-                    fullWidth
-                    autoComplete="off"
-                    label="Password"
-                    required
-                    error={error !== undefined}
-                    helperText={error ? helperTexts.password[error.type] : ""}
-                  />
-                )}
-              />
-            </div>
-            <Button
-              type="submit"
-              fullWidth
-              disabled={!formState.isValid}
-              variant="contained"
-              sx={{ mt: 3, textTransform: "capitalize" }}
-            >
-              Login
-            </Button>
-            {/* <Grid container sx={{ mt: 1 }}>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid> */}
-          </Box>
+            Sign in with GitHub
+          </Button>
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={() => signInWithGoogle()}
+            sx={{ mb: 1, textTransform: "capitalize" }}
+          >
+            Sign in with Google
+          </Button>
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={() => handleSignInAnonymously()}
+            sx={{ mb: 1, textTransform: "capitalize" }}
+          >
+            Sign in Anonymously
+          </Button>
         </Box>
       </Box>
     </>

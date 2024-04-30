@@ -14,14 +14,6 @@ const SIDE_NAV_ITEMS = [
     tooltip: "Home",
   },
   {
-    name: "Search Product/Fund",
-    url: "searchProductOrFund",
-    key: "",
-    openInNewTab: false,
-    icon: SEARCH_PRODUCT_FUND_ICON,
-    tooltip: "Search Product/Fund",
-  },
-  {
     name: "Settings",
     url: "settings",
     key: "settings",
