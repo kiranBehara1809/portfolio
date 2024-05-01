@@ -11,6 +11,7 @@ import firebase from "firebase/compat/app";
 
 
 const app = firebase.initializeApp({
+  apiKey: "AIzaSyAOUktp8uX4hn3v1QHEuRpMYxAG_RbVSRA",
   authDomain: "kiran-behara.firebaseapp.com",
   projectId: "kiran-behara",
   storageBucket: "kiran-behara.appspot.com",
