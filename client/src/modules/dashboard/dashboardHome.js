@@ -10,13 +10,13 @@ const DashboardHome = () => {
 
   useEffect(() => {
     console.log(currentUser);
-    getRepos();
+    // getRepos();
   });
 
   const getRepos = async () => {
     // console.log(currentUser.accessToken);
     const octokit = new Octokit({
-      auth: "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",
+      auth: "",
     });
     await octokit.request("GET /gists", {
       headers: {
