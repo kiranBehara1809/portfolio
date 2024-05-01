@@ -14,7 +14,6 @@ const DashboardHome = () => {
   });
 
   const getRepos = async () => {
-    // console.log(currentUser.accessToken);
     const octokit = new Octokit({
       auth: "",
     });
