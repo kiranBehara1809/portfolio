@@ -1,0 +1,23 @@
+.swal2-container{
+  z-index: 99999999 !important;
+}
+
+.reactIconsColor{
+  color: var(--reacIconsColor);
+  font-size: x-large;
+}
+.pageNotFoundIcon{
+  color: var(--reacIconsColor);
+  font-size: 180px;
+}
+.reactIconsColorMedium{
+  color: var(--reacIconsColor);
+  font-size: medium;
+}
+.reactIconsTwoIcons{
+  color: var(--reacIconsColor);
+  font-size: x-large;
+}
+.outPatientIcon{
+  transform: rotateY(180deg) !important;
+}
