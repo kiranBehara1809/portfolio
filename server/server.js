@@ -9,7 +9,7 @@ import axios from "axios";
 import lodash from "lodash";
 import path from "path";
 global._ = lodash;
-global.__dirname = path.resolve("../");
+global.__dirname = path.resolve("./");
 
 const app = express();
 dotenv.config();
