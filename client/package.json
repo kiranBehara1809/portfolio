@@ -1,7 +1,6 @@
 {
   "name": "management",
   "version": "0.1.0",
-  "homepage": "https://kiranbehara1809.github.io",
   "proxy": "http://localhost:4999",
   "private": true,
   "dependencies": {
@@ -55,7 +54,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "export NODE_OPTIONS=--max_old_space_size=4096 && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
