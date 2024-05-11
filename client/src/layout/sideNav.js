@@ -44,7 +44,7 @@ const closedMixin = (theme) => ({
   overflowX: "hidden",
   width: `calc(${theme.spacing(5.5)} + 1px)`,
   [theme.breakpoints.up("sm")]: {
-    width: `calc(${theme.spacing(6.5)} + 1px)`,
+    width: `calc(${theme.spacing(5.5)} + 1px)`,
   },
 });
 
@@ -270,9 +270,15 @@ export default function SideNav() {
         </List>
         <Divider />
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: "9px" }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 0.5 }}>
         <DrawerHeader />
-        <Box sx={{ mt: "-20px" }}>
+        <Box
+          sx={{
+            mt: "-20px",
+            width: `calc(100vw - ${theme.spacing(6.5)} + 1px)`,
+            p: "2px !important",
+          }}
+        >
           <Outlet />
         </Box>
       </Box>

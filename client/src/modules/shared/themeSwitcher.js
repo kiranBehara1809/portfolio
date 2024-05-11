@@ -4,6 +4,7 @@ import { toTitleCase } from "../../common/functions/function";
 import { useSelector } from "react-redux";
 import store from "../../store";
 import { CURRENT_USER_ACTIONS } from "../../store/slices/currentUser";
+import { CURRENT_THEME_ACTIONS } from "../../store/slices/currentTheme";
 
 const ThemeSwitcher = () => {
   const currentUser = useSelector((state) => state.currentUser.currentUser);
@@ -60,11 +61,8 @@ const ThemeSwitcher = () => {
   }, [currentUser]);
 
   const handleChangeTheme = async (obj) => {
-    store.dispatch(
-      CURRENT_USER_ACTIONS.setCurrentUser({
-        theme: obj.themeName,
-      })
-    );
+    store.dispatch(CURRENT_THEME_ACTIONS.setCurrentTheme(obj.themeName));
+    localStorage.setItem("currentTheme", obj.themeName);
     // const response = await updateMastersData(
     //   `users/update/${currentUser?._id}`,
     //   {

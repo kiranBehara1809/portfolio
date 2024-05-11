@@ -1,6 +1,9 @@
 import Swal from "sweetalert2";
 import { BASE_ROUTE_PATH } from "../../constants/project";
 import { handleLogout } from "../../http/authRequests";
+import dayjs from "dayjs";
+import duration from 'dayjs/plugin/duration'
+import relativeTime from "dayjs/plugin/relativeTime";
 
 const addBaseUrl = (url) => {
   return `/${BASE_ROUTE_PATH}/${url}`;
@@ -213,7 +216,7 @@ function calculateBMI(weight, height) {
 
   // Calculate BMI
   const bmi = weight / (heightInMeters * heightInMeters);
-  
+
   let category = "";
   if (bmi < 18.5) {
     category = "Underweight";
@@ -234,6 +237,36 @@ function toTitleCase(str) {
     return match.toUpperCase();
   });
 }
+
+function prepareAutoCompleteData(list, nameKey) {
+  if (list && list?.length === 0) {
+    return [];
+  }
+  const tempArr = list?.map((x) => {
+    console.log(x, x[nameKey]);
+    return {
+      label: x[nameKey],
+      id: crypto.randomUUID(),
+    };
+  });
+  return tempArr;
+}
+const formatDate = (date) => {
+  if (new Date(date) === "Invalid Date") return "";
+  return dayjs(date).format("DD/MM/YYYY HH:MM");
+};
+
+const calculateTimeDiffAndReturnStr = (compare1, compare2) => {
+  if (
+    new Date(compare1) === "Invalid Date" ||
+    new Date(compare2) === "Invalid Date"
+  )
+    return "";
+  const val = dayjs(compare1).diff(compare2, "minutes");
+  dayjs.extend(duration);
+  dayjs.extend(relativeTime);
+  return dayjs.duration(val, "minutes").humanize();
+};
 export {
   addBaseUrl,
   showBasicToast,
@@ -248,4 +281,7 @@ export {
   calculateAge,
   calculateBMI,
   toTitleCase,
+  prepareAutoCompleteData,
+  formatDate,
+  calculateTimeDiffAndReturnStr,
 };

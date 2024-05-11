@@ -14,6 +14,10 @@
   color: var(--reacIconsColor);
   font-size: medium;
 }
+.reactIconsColoSmall{
+  color: var(--reacIconsColor);
+  font-size: small;
+}
 .reactIconsTwoIcons{
   color: var(--reacIconsColor);
   font-size: x-large;

@@ -6,10 +6,10 @@ import {
   CircularProgress,
   Card,
   useTheme,
+  Stack,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { SETTINGS_MENU } from "../../db/dbMasters/settingsMenu";
-import { Stack } from "@mui/system";
 import { useEffect, useState } from "react";
 import CustomHeaderWithSearchBar from "../../common/components/customHeaderWithSearchBar";
 import SearchResultsNotFound from "../../common/components/searchResultsNotFound";
@@ -131,7 +131,7 @@ const SettingsHome = () => {
           </Grid>
         </Grid>
 
-        <Grid item xs={12} sm={7.5} sx={{pl:1}}>
+        <Grid item xs={12} sm={7.5} sx={{ pl: 1 }}>
           {selectedMenuCard === "THEME" && <ThemeSwitcher />}
           {selectedMenuCard === "FONT_SIZE" && <UnderDev />}
         </Grid>

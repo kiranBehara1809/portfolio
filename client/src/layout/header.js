@@ -26,29 +26,25 @@ import { useSelector } from "react-redux";
 import { auth } from "../firebase";
 import store from "../store";
 import { CURRENT_USER_ACTIONS } from "../store/slices/currentUser";
+import axios from "axios";
 
 const Header = () => {
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
-  const [currentUserData, setCurrentUserData] = useState(null);
+  const currentUserData = useSelector((state) => state.currentUser.currentUser);
   const navigate = useNavigate();
   const customIconStyles = {
     margin: "0px 5px",
     cursor: "pointer",
   };
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
+  // if(currentUserData === null){
+  //   localStorage.removeItem("accessToken")
+  //   navigate("/login")
+  // }
   useEffect(() => {
-    const tempUserData = localStorage.getItem("TEMP_USER_DATA");
-    if (tempUserData) {
-      setCurrentUserData(JSON.parse(tempUserData));
-      store.dispatch(
-        CURRENT_USER_ACTIONS.setCurrentUser(JSON.parse(tempUserData))
-      );
-    } else {
-      navigate("/login");
-    }
+    getCurrentUser();
   }, []);
+  
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -71,9 +67,8 @@ const Header = () => {
         async (res) => {
           if (res.isConfirmed) {
             showBasicToast("success", "Logout successful");
+            localStorage.removeItem("accessToken");
             navigate(option.url);
-            localStorage.removeItem("TEMP_USER_DATA");
-            auth.signOut();
           }
         }
       );
@@ -83,6 +78,22 @@ const Header = () => {
     }
   };
 
+  const getCurrentUser = async () => {
+    const lsToken = localStorage.getItem("accessToken") === null;
+    if (lsToken) {
+      navigate("/login");
+      return;
+    }
+    let config = {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("accessToken"),
+      },
+    };
+    const user = await axios.get(`https://api.github.com/user`, config);
+    if (user) {
+      store.dispatch(CURRENT_USER_ACTIONS.setCurrentUser(user.data));
+    }
+  };
   return (
     <>
       <Box
@@ -96,12 +107,12 @@ const Header = () => {
       >
         <Typography variant="h5" noWrap component="div" sx={{ pl: 2 }}>
           {/* {pageHeader || PROJECT_INFO.name} */}
-          {PROJECT_INFO.name}
+          {currentUserData?.login}
         </Typography>
         {currentUserData && (
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <img
-              src={currentUserData?.photoURL}
+              src={currentUserData?.avatar_url}
               loading="eager"
               width={35}
               onClick={(event) => handleClick(event)}
@@ -125,27 +136,13 @@ const Header = () => {
           horizontal: "right",
         }}
       >
-        <Box
-          sx={{
-            background: "#8e7070",
-            color: "white",
-            display: "flex",
-            p: "4px 0",
-            justifyContent: "center",
-          }}
-        >
-          Signed in{" "}
-          {currentUserData?.provider !== "Anonymously"
-            ? "with " + currentUserData?.provider
-            : currentUserData?.provider}
-        </Box>
         <List sx={{ width: "250px" }}>
           <ListItem
             disablePadding
             sx={{ display: "flex", justifyContent: "center", p: 1 }}
           >
             <img
-              src={currentUserData?.photoURL}
+              src={currentUserData?.avatar_url}
               width={120}
               height={120}
               style={{ borderRadius: "50%" }}
@@ -159,7 +156,7 @@ const Header = () => {
               fontWeight: "bold",
             }}
           >
-            <Tooltip title={currentUserData?.displayName}>
+            <Tooltip title={currentUserData?.name}>
               <span
                 style={{
                   whiteSpace: "nowrap",
@@ -167,7 +164,7 @@ const Header = () => {
                   textOverflow: "ellipsis",
                 }}
               >
-                {currentUserData?.displayName}
+                {currentUserData?.name}
               </span>
             </Tooltip>
           </ListItem>

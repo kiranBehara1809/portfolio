@@ -14,13 +14,7 @@ import { addBaseUrl, showBasicToast } from "../../common/functions/function";
 import { Controller, useForm } from "react-hook-form";
 import store from "../../store";
 import { PAGE_HEADER_ACTIONS } from "../../store/slices/pageHeader";
-import {
-  GithubAuthProvider,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInAnonymously,
-} from "firebase/auth";
-import { auth } from "../../firebase";
+import axios from "axios";
 import { PROJECT_INFO } from "../../constants/project";
 import { CURRENT_USER_ACTIONS } from "../../store/slices/currentUser";
 
@@ -30,81 +24,35 @@ export default function Login() {
 
   const handleSubmit = () => {
     navigate(addBaseUrl("home"));
-    store.dispatch(PAGE_HEADER_ACTIONS.setPageHeader("Dashboard"));
   };
+
+  useEffect(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const codeParam = urlParams.get("code");
+    if (codeParam && localStorage.getItem("accessToken") === null) {
+      getAccessToken(codeParam);
+    }
+    // if (localStorage.getItem("accessToken") !== null) {
+    //   getCurrentUser();
+    //   store.dispatch(PAGE_HEADER_ACTIONS.setPageHeader("Dashboard"));
+    // }
+  }, []);
 
   const handleLoginWithGithub = async () => {
-    const provider = new GithubAuthProvider();
-    try {
-      const res = await signInWithPopup(auth, provider);
-      if (!res) {
-        throw new Error("Could not complete signup");
-      }
-      const user = res.user;
-      if (user) {
-        console.log(user);
-        const localObj = {
-          email: user.providerData[0]?.email || "",
-          phoneNumber: user.providerData[0]?.phoneNumber || "",
-          displayName: user.providerData[0]?.displayName || "",
-          photoURL: user.providerData[0]?.photoURL || "",
-          provider: "GitHub",
-          accessToken: user.accessToken,
-          refreshToken: user.refreshToken,
-        };
-        localStorage.setItem("TEMP_USER_DATA", JSON.stringify(localObj));
-        store.dispatch(CURRENT_USER_ACTIONS.setCurrentUser(localObj))
-        handleSubmit();
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    window.location.assign(
+      `https://github.com/login/oauth/authorize?client_id=e49f8e3173f0e4ec2b83`
+    );
   };
 
-  const handleSignInAnonymously = async () => {
-    try {
-      const res = await signInAnonymously(auth);
-      if (!res) {
-        throw new Error("Could not complete signup");
-      }
-      console.log(res);
-      const user = res.user;
-      if (user) {
-        const localObj = {
-          email: faker.internet.email() || "",
-          phoneNumber: faker.internet.port() || "",
-          displayName: faker.internet.userName() || "",
-          photoURL: faker.image.avatar() || "",
-          provider: "Anonymously",
-          accessToken : null,
-          refreshToken : null
-        };
-        localStorage.setItem("TEMP_USER_DATA", JSON.stringify(localObj));
-        store.dispatch(CURRENT_USER_ACTIONS.setCurrentUser(localObj));
-        handleSubmit();
-      }
-    } catch (error) {
-      console.log(error);
+  async function getAccessToken(codeParam) {
+    const resp = await axios.post("/getAccessToken", { code: codeParam });
+    if (resp.data.access_token) {
+      localStorage.setItem("accessToken", resp.data.access_token);
+      navigate(addBaseUrl("home"));
+      store.dispatch(PAGE_HEADER_ACTIONS.setPageHeader("Dashboard"));
     }
-  };
-
-  const signInWithGoogle = () => {
-    const provider = new GoogleAuthProvider();
-    const info = signInWithPopup(auth, provider).then((res) => {
-      if (res) {
-        const localObj = {
-          email: res.user.providerData[0]?.email || "",
-          phoneNumber: res.user.providerData[0]?.phoneNumber || "",
-          displayName: res.user.providerData[0]?.displayName || "",
-          photoURL: res.user.providerData[0]?.photoURL || "",
-          provider: "Google",
-        };
-        localStorage.setItem("TEMP_USER_DATA", JSON.stringify(localObj));
-        store.dispatch(CURRENT_USER_ACTIONS.setCurrentUser(localObj));
-        handleSubmit();
-      }
-    });
-  };
+  }
 
   return (
     <>
@@ -154,7 +102,7 @@ export default function Login() {
           >
             Sign in with GitHub
           </Button>
-          <Button
+          {/* <Button
             variant="contained"
             fullWidth
             onClick={() => signInWithGoogle()}
@@ -169,7 +117,7 @@ export default function Login() {
             sx={{ mb: 1, textTransform: "capitalize" }}
           >
             Sign in Anonymously
-          </Button>
+          </Button> */}
         </Box>
       </Box>
     </>

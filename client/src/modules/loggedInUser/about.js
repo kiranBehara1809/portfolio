@@ -3,8 +3,11 @@ import { PROJECT_INFO } from "../../constants/project";
 import { Grid, ListItemText } from "@mui/material";
 import CustomHeaderWithSearchBar from "../../common/components/customHeaderWithSearchBar";
 import { ACC_POPOVER_INFO_ICON } from "../../constants/icons";
+import { useSelector } from "react-redux";
 
 const About = () => {
+  const currentUser = useSelector((state) => state.currentUser.currentUser);
+
   return (
     <>
       <Grid container sx={{ mb: 1 }}>
@@ -45,6 +48,7 @@ const About = () => {
             primary={PROJECT_INFO.description || ""}
             secondary="Project Description"
           />
+          {currentUser && <pre>{JSON.stringify(currentUser, null, 4)}</pre>}
         </Grid>
       </Grid>
     </>

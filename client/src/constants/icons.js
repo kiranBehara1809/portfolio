@@ -57,6 +57,13 @@ import { ImFontSize } from "react-icons/im";
 import { FaDev } from "react-icons/fa";
 import { TbInfoTriangleFilled } from "react-icons/tb";
 import { FaSearch } from "react-icons/fa";
+import { FaFolderOpen } from "react-icons/fa";
+import { PiGitBranchLight } from "react-icons/pi";
+import { FaClone } from "react-icons/fa";
+import { LiaClone } from "react-icons/lia";
+import { RiDragMove2Fill } from "react-icons/ri";
+import { FaRegFileCode } from "react-icons/fa6";
+
 
 const SETTINGS_ICON = (
   <SettingsIcon fontSize="large" sx={{ color: "primary.main" }} />
@@ -160,6 +167,18 @@ const FONT_SIZE_ICON = <ImFontSize className="reactIconsColor" />;
 
 //------------------ common icons ---------------
 
+//github
+const REPOSITORY_ICON = <FaFolderOpen className="reactIconsColor" />;
+const DRAG_ICON = <RiDragMove2Fill className="reactIconsColoSmall" />;
+const BRANCHES_ICON = <PiGitBranchLight className="reactIconsColor" />;
+const GISTS_ICON = <FaRegFileCode className="reactIconsColor" />;
+const BRANCHES_ICON_SMALL = (
+  <PiGitBranchLight className="reactIconsColoSmall" />
+);
+const CLONE_ICON_SMALL = <LiaClone className="reactIconsColoSmall" />;
+
+//github
+
 export {
   SETTINGS_ICON,
   HOME_ICON,
@@ -215,5 +234,11 @@ export {
   FONT_SIZE_ICON,
   UNDER_DEV_ICON,
   SEARCH_PRODUCT_FUND_ICON,
-  SEARCH_ICON
+  SEARCH_ICON,
+  REPOSITORY_ICON,
+  BRANCHES_ICON,
+  BRANCHES_ICON_SMALL,
+  CLONE_ICON_SMALL,
+  DRAG_ICON,
+  GISTS_ICON,
 };

@@ -15,7 +15,7 @@ const UI = {
 const BASE_ROUTE_PATH = "kb";
 
 const API_ENDPOINT = "http://localhost:8888/api/v1";
-const ACCESS_TOKEN_KEY_NAME = "A_TOKEN";
+const ACCESS_TOKEN_KEY_NAME = "accessToken";
 const REFRESH_TOKEN_KEY_NAME = "R_TOKEN";
 
 export {

@@ -1,4 +1,4 @@
-import { Navigate, Route, useRoutes } from "react-router-dom";
+import { Navigate, Route, Routes, useRoutes } from "react-router-dom";
 import Home from "./layout/home";
 import { BASE_ROUTE_PATH } from "./constants/project";
 import PageNotFound from "./common/components/pageNotFound";
@@ -61,7 +61,7 @@ export default function Routings() {
       path: "*",
       element: (
         <>
-          <PageNotFound />{" "}
+          <PageNotFound />
         </>
       ),
     },
